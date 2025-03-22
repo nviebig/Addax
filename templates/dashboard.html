@@ -23,15 +23,16 @@
   <h1>Overview Dashboard</h1>
   <div id="map"></div>
   <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  
   <script>
     // Create the map centered on the Sahel region.
     var map = L.map('map').setView([15, 10], 6);
-  
+    
     // Add a base tile layer.
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(map);
-  
+    
     // Define a mapping from country names to colors.
     var countryColors = {
       "Burkina Faso": "#FFA500", // Orange
@@ -42,7 +43,7 @@
       "Sudan": "#A52A2A",        // Brown
       "Mali": "#FFC0CB"          // Pink
     };
-  
+    
     // Array of countries with their respective GeoJSON file names.
     var countries = [
       { name: "Burkina Faso", file: "burkinafaso.json" },
@@ -53,7 +54,7 @@
       { name: "Sudan", file: "sudan.json" },
       { name: "Mali", file: "mali.json" }
     ];
-  
+    
     // Load each country's GeoJSON and add it as a clickable feature group.
     countries.forEach(function(country) {
       fetch("/static/geojson/" + country.file)
@@ -77,10 +78,6 @@
                                    "<strong style='font-size:1.5em;'>" + municipality + "</strong>" +
                                    "</div>";
               layer.bindTooltip(tooltipContent, {sticky: true});
-              // Attach a click event to each individual feature.
-              layer.on('click', function(e) {
-                window.location.href = '/dashboard/' + country.name.toLowerCase();
-              });
             }
           });
           
@@ -92,7 +89,9 @@
           
           // Attach a single click event to the entire group.
           group.on('click', function(e) {
-            window.location.href = '/dashboard/' + country.name.toLowerCase();
+            var targetUrl = '/dashboard/' + country.name.toLowerCase().replace(/\s+/g, '');
+            console.log("Redirecting to:", targetUrl);
+            window.location.href = targetUrl;
           });
           
           // Add the group to the map.

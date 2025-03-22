@@ -1,12 +1,6 @@
-from flask import Blueprint, render_template
+from flask import render_template
+from . import mali_bp
 
-mali_bp = Blueprint('mali', __name__)
-
-@mali_bp.route('/')
-def index():
-    return render_template('mali/index.html', country='Mali', country_code='ML')
-
-@mali_bp.route('/data')
-def data():
-    # Add logic to fetch and return data for Mali
-    return {"data": "Mali data goes here"}
+@mali_bp.route("/")
+def detail():
+    return render_template("detail.html", country="Mali", country_code="ML")

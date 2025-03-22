@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>G20 Land Initiative Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>G20 Land Initiative Dashboard</h1>
+    <button onclick="window.location.href='{{ url_for('dashboard') }}'">Open the Interactive Dashboard</button>
+    <button onclick="window.location.href='{{ url_for('analysis') }}'">View Our Analysis</button>
+  </div>
+</body>
+</html>

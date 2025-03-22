@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sahel Overview</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    #map {
+      width: 100%;
+      height: 90vh;
+    }
+    h1 {
+      text-align: center;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Overview Dashboard</h1>
+  <div id="map"></div>
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  <script>
+    // Create the map centered on the Sahel region.
+    var map = L.map('map').setView([15, 10], 6);
+  
+    // Add a base tile layer.
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+  
+    // Define a mapping from country names to colors.
+    var countryColors = {
+      "Burkina Faso": "#FFA500", // Orange
+      "Chad": "#0000FF",         // Blue
+      "Mauritania": "#008000",   // Green
+      "Niger": "#FF0000",        // Red
+      "Senegal": "#800080",      // Purple
+      "Sudan": "#A52A2A",        // Brown
+      "Mali": "#FFC0CB"          // Pink
+    };
+  
+    // Array of countries with their respective GeoJSON file names.
+    var countries = [
+      { name: "Burkina Faso", file: "burkinafaso.json" },
+      { name: "Chad", file: "chad.json" },
+      { name: "Mauritania", file: "mauritania.json" },
+      { name: "Niger", file: "niger.json" },
+      { name: "Senegal", file: "senegal.json" },
+      { name: "Sudan", file: "sudan.json" },
+      { name: "Mali", file: "mali.json" }
+    ];
+  
+    // Load each country's GeoJSON and add it as a clickable feature group.
+    countries.forEach(function(country) {
+      fetch("/static/geojson/" + country.file)
+        .then(function(response) { return response.json(); })
+        .then(function(geojsonData) {
+          // Create a GeoJSON layer with a style function that returns a unique color.
+          var geojsonLayer = L.geoJSON(geojsonData, {
+            style: function(feature) {
+              var color = countryColors[country.name] || "orange";
+              return {
+                fillColor: color,
+                fillOpacity: 0.4,
+                color: "black",
+                weight: 2
+              };
+            },
+            onEachFeature: function(feature, layer) {
+              // Use the "municipalite" property if available, otherwise fallback to the country name.
+              var municipality = feature.properties.municipalite ? feature.properties.municipalite : country.name;
+              var tooltipContent = "<div style='text-align:center;'>" +
+                                   "<strong style='font-size:1.5em;'>" + municipality + "</strong>" +
+                                   "</div>";
+              layer.bindTooltip(tooltipContent, {sticky: true});
+              // Attach a click event to each individual feature.
+              layer.on('click', function(e) {
+                window.location.href = '/dashboard/' + country.name.toLowerCase();
+              });
+            }
+          });
+          
+          // Combine all features into a single FeatureGroup.
+          var group = L.featureGroup();
+          geojsonLayer.eachLayer(function(layer) {
+            group.addLayer(layer);
+          });
+          
+          // Attach a single click event to the entire group.
+          group.on('click', function(e) {
+            window.location.href = '/dashboard/' + country.name.toLowerCase();
+          });
+          
+          // Add the group to the map.
+          group.addTo(map);
+        })
+        .catch(function(error) {
+          console.error("Error loading geojson for " + country.name + ": " + error);
+        });
+    });
+  </script>
+</body>
+</html>

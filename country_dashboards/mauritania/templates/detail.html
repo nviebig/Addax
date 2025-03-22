@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mauritania Dashboard</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+    integrity="sha256-sA+e2Zj8P+0n6tY6F7iYd3eR6ZonbV1z5xT9gT9gC+o=" crossorigin=""/>
+  <!-- Plotly JS -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .container {
+      display: flex;
+      height: 100vh;
+    }
+    /* Left side: the map */
+    #map {
+      flex: 1;
+      border-right: 1px solid #ccc;
+    }
+    /* Right side: two plots */
+    .plots {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .plot {
+      flex: 1;
+      border-bottom: 1px solid #ccc;
+    }
+    .plot:last-child {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="map"></div>
+    <div class="plots">
+      <div id="plot1" class="plot"></div>
+      <div id="plot2" class="plot"></div>
+    </div>
+  </div>
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+    integrity="sha256-Dv5M3shPjC8gKPNKChwuaKq/jHhaE0tQ/Pr+3QJZCqM=" crossorigin=""></script>
+  <script>
+    // Initialize the map centered on Mauritania (adjust coordinates as needed)
+    var map = L.map('map').setView([20, -10], 6);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Optionally, add more layers or boundaries specific to Mauritania using GeoJSON.
+
+    // Plot 1: Placeholder for precipitation trends over time.
+    var data1 = [{
+      x: ['2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020'],
+      y: [10, 15, 13, 17, 16, 14, 18, 15, 19, 16, 17],
+      type: 'scatter'
+    }];
+    var layout1 = {
+      title: 'Precipitation Over Time',
+      margin: { t: 40 }
+    };
+    Plotly.newPlot('plot1', data1, layout1);
+
+    // Plot 2: Placeholder for land cover distribution or change.
+    var data2 = [{
+      labels: ['Forest', 'Savanna', 'Urban', 'Water'],
+      values: [20, 30, 25, 25],
+      type: 'pie'
+    }];
+    var layout2 = {
+      title: 'Land Cover Distribution',
+      margin: { t: 40 }
+    };
+    Plotly.newPlot('plot2', data2, layout2);
+  </script>
+</body>
+</html>

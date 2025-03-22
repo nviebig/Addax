@@ -1,12 +1,10 @@
 from flask import Flask, render_template
 import ee
-
-# Initialize Earth Engine.
 ee.Initialize()
 
 app = Flask(__name__)
 
-# Register global routes.
+# Global routes.
 @app.route("/")
 def homepage():
     return render_template("homepage.html")
@@ -20,13 +18,13 @@ def analysis():
     return render_template("analysis.html")
 
 # Import and register country blueprints.
-from country_dashboards.mali.routes import mali_bp
-from country_dashboards.niger.routes import niger_bp
-from country_dashboards.chad.routes import chad_bp
-from country_dashboards.burkinafaso.routes import burkinafaso_bp
-from country_dashboards.mauritania.routes import mauritania_bp
-from country_dashboards.senegal.routes import senegal_bp
-from country_dashboards.sudan.routes import sudan_bp
+from country_dashboards.mali import mali_bp
+from country_dashboards.niger import niger_bp
+from country_dashboards.chad import chad_bp
+from country_dashboards.burkinafaso import burkinafaso_bp
+from country_dashboards.mauritania import mauritania_bp
+from country_dashboards.senegal import senegal_bp
+from country_dashboards.sudan import sudan_bp
 
 app.register_blueprint(mali_bp, url_prefix='/dashboard/mali')
 app.register_blueprint(niger_bp, url_prefix='/dashboard/niger')

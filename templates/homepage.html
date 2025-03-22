@@ -2,13 +2,72 @@
 <html>
 <head>
   <title>G20 Land Initiative Dashboard</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100vh; /* Full viewport height */
+    }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      /* Set background image with a translucent white overlay */
+      background: linear-gradient(rgba(255,255,255,0.5), rgba(255,255,255,0.5)), 
+                  url("{{ url_for('static', filename='images/Background.JPG') }}") no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;  /* Vertically centers content */
+      align-items: center;      /* Horizontally centers content */
+      text-align: center;
+    }
+    .header {
+      /* No extra top margin needed */
+    }
+    .logos {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    .logos img {
+      max-height: 200px;
+    }
+    .title {
+      font-size: 5em;
+      color: #2c3e50;
+      margin-bottom: 40px;
+    }
+    .buttons {
+      margin-top: 20px;
+    }
+    .buttons button {
+      padding: 25px 50px;
+      font-size: 2em;
+      margin: 10px;
+      background-color: rgb(86, 163, 81); /* R86, G163, B81 */
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .buttons button:hover {
+      background-color: rgb(76, 153, 71); /* Slightly darker shade on hover */
+    }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>G20 Land Initiative Dashboard</h1>
-    <button onclick="window.location.href='{{ url_for('dashboard') }}'">Open the Interactive Dashboard</button>
-    <button onclick="window.location.href='{{ url_for('analysis') }}'">View Our Analysis</button>
+  <div class="header">
+    <div class="logos">
+      <img src="{{ url_for('static', filename='images/combined_logo.png') }}" alt="Combined UNCCR and G20 Logo">
+    </div>
+    <div class="title">G20 Land Initiative Dashboard</div>
+    <div class="buttons">
+      <button onclick="window.location.href='{{ url_for('dashboard') }}'">Open the Interactive Dashboard</button>
+      <button onclick="window.location.href='https://g20land.org/'">Visit G20 Global Land Initiative</button>
+    </div>
   </div>
 </body>
 </html>

@@ -3,4 +3,4 @@ from . import sudan_bp
 
 @sudan_bp.route("/")
 def detail():
-    return render_template("detail.html", country="Sudan", country_code="SD")
+    return render_template("sudan/detail.html", country="Sudan", country_code="SD")

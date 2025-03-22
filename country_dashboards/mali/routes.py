@@ -3,4 +3,4 @@ from . import mali_bp
 
 @mali_bp.route("/")
 def detail():
-    return render_template("detail.html", country="Mali", country_code="ML")
+    return render_template("templates/detail.html", country="Mali", country_code="ML")

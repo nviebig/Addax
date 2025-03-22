@@ -3,5 +3,5 @@ from . import mauritania_bp
 
 @mauritania_bp.route("/")
 def detail():
-    print("Mauritania detail route accessed")  # Debug print in server log
-    return render_template("detail.html", country="Mauritania")
+    print("Mauritania detail route accessed")
+    return render_template("mauritania/detail.html")

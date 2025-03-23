@@ -1,4 +1,4 @@
-![Project Logo](Project_Addax/static/images/combined_logo.png)
+![Project Logo](static/images/combined_logo.png)
 
 # Project Addax
 

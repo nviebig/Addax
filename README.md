@@ -3,6 +3,7 @@
 Project Addax is a Flask-based web application that provides dashboards and analytical tools for various countries in the Sahel region. The application includes individual dashboards for each country as well as a Sahel-wide comparison dashboard.
 
 ## Directory Structure
+```
 Project_Addax/
 ├── country_dashboards/
 │   ├── mauritania/
@@ -54,7 +55,7 @@ Project_Addax/
 │   └── sahel_comparison.html # Template for Sahel-wide comparison dashboard
 ├── app.py                    # Main application file that initializes Flask and registers blueprints/routes
 └── README.md                 # This file
-
+```
 ## Installation
 
 1. **Clone the repository:**

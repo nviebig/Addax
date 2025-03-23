@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sahel Wide Comparison</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    h1 {
+      text-align: center;
+      margin: 10px 0;
+    }
+    #comparisonMap {
+      width: 100%;
+      height: 80vh;
+    }
+    #comparisonContent {
+      padding: 20px;
+      text-align: center;
+    }
+    /* Style for the back button */
+    #backButtonContainer {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    #backButton {
+      padding: 10px 20px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Sahel Wide Comparison</h1>
+  <div id="backButtonContainer">
+    <button id="backButton" onclick="window.location.href='/dashboard'">Back to Dashboard</button>
+  </div>
+  <div id="comparisonMap"></div>
+  <div id="comparisonContent">
+    <!-- Placeholder for Sahel-wide comparison content -->
+    <p>Coming soon: detailed charts and comparisons...</p>
+  </div>
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  <script>
+    var map = L.map('comparisonMap').setView([15, 10], 6);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+    // Add further Sahel-wide comparison layers or interactivity here.
+  </script>
+</body>
+</html>

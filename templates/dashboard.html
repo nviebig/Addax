@@ -17,11 +17,25 @@
       text-align: center;
       margin: 10px 0;
     }
+    /* New style for the centered button */
+    #analysisButtonContainer {
+      text-align: center;
+      margin: 20px 0;
+    }
+    #analysisButton {
+      padding: 10px 20px;
+      font-size: 1em;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <h1>Overview Dashboard</h1>
   <div id="map"></div>
+  <!-- Container for the Sahel Wide Analysis button -->
+  <div id="analysisButtonContainer">
+    <button id="analysisButton" onclick="window.location.href='/sahel_comparison'">Sahel Wide Analysis</button>
+  </div>
   <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
   
   <script>
@@ -74,9 +88,7 @@
             onEachFeature: function(feature, layer) {
               // Use the "municipalite" property if available, otherwise fallback to the country name.
               var municipality = feature.properties.municipalite ? feature.properties.municipalite : country.name;
-              var tooltipContent = "<div style='text-align:center;'>" +
-                                   "<strong style='font-size:1.5em;'>" + municipality + "</strong>" +
-                                   "</div>";
+              var tooltipContent = "<div style='text-align:center;'><strong style='font-size:1.5em;'>" + municipality + "</strong></div>";
               layer.bindTooltip(tooltipContent, {sticky: true});
             }
           });

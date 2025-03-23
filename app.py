@@ -17,6 +17,10 @@ def dashboard():
 def analysis():
     return render_template("analysis.html")
 
+@app.route('/sahel_comparison')
+def sahel_comparison():
+    return render_template('sahel_comparison.html')
+
 # Import and register country blueprints.
 from country_dashboards.mali import mali_bp
 from country_dashboards.niger import niger_bp

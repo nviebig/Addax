@@ -1,3 +1,5 @@
+![Project Logo](Project_Addax/static/images/combined_logo.png)
+
 # Project Addax
 
 Project Addax is a Flask-based web application that provides dashboards and analytical tools for various countries in the Sahel region. The application includes individual dashboards for each country as well as a Sahel-wide comparison dashboard.

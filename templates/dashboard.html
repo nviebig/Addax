@@ -4,7 +4,7 @@
   <title>Sahel Overview</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css">
   <style>
-    /* Full page */
+    /* Full page setup */
     body, html {
       margin: 0;
       padding: 0;
@@ -12,212 +12,132 @@
       height: 100%;
       font-family: 'Segoe UI', sans-serif;
     }
-    /* Map covers full screen */
+    /* Map container fills the whole screen */
     #map {
       width: 100%;
       height: 100%;
     }
-    /* Top-right control panel for toggles */
-    #togglePanel {
+    /* Top-right overlay for data layer checkboxes */
+    .top-overlay {
       position: absolute;
       top: 10px;
       right: 10px;
-      width: 250px;
+      width: 300px;
       background-color: rgba(128, 128, 128, 0.4);
-      padding: 10px;
+      padding: 20px;
       box-sizing: border-box;
-      border-radius: 4px;
-      z-index: 1000;
-      font-size: 0.9em;
-    }
-    #togglePanel h3 {
-      margin: 0 0 10px;
-      color: #fff;
       text-align: center;
-      font-size: 1em;
+      z-index: 1000;
+      border-radius: 4px;
+      color: #fff;
     }
-    #togglePanel label {
+    .top-overlay h1 {
+      margin-bottom: 20px;
+      font-size: 1.5em;
+    }
+    .top-overlay .toggle-group label {
       display: block;
       margin: 5px 0;
-      color: #fff;
+      font-size: 1em;
     }
-    /* Bottom-center slider panel */
-    #yearSliderPanel {
+    .top-overlay .toggle-group input[type="checkbox"] {
+      transform: scale(1.2);
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+    /* Bottom-center overlay for the OV Dashboard */
+    .bottom-overlay {
       position: absolute;
       bottom: 10px;
       left: 50%;
       transform: translateX(-50%);
-      width: 300px;
+      width: 500px;
       background-color: rgba(128, 128, 128, 0.4);
-      padding: 10px;
+      padding: 20px;
       box-sizing: border-box;
-      border-radius: 4px;
-      z-index: 1000;
       text-align: center;
-      font-size: 0.9em;
+      z-index: 1000;
+      border-radius: 4px;
       color: #fff;
     }
-    #yearSliderPanel label {
-      display: block;
-      margin-bottom: 5px;
+    .bottom-overlay h1 {
+      margin: 0 0 15px;
+      font-size: 2em;
     }
-    #yearSliderPanel input[type="range"] {
+    .bottom-overlay label {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 0.9em;
+    }
+    .bottom-overlay input[type="range"] {
       width: 100%;
+      margin: 10px 0;
+    }
+    .bottom-overlay p {
+      margin-top: 10px;
+      font-size: 0.9em;
+    }
+    /* Style the datalist options to be left-aligned */
+    datalist, datalist option {
+      text-align: left;
+    }
+    datalist option {
+      display: block;
     }
   </style>
 </head>
 <body>
   <div id="map"></div>
-  <!-- Top-right toggle panel -->
-  <div id="togglePanel">
-    <h3>Data Layers</h3>
-    <input type="checkbox" id="toggleGpp">
-    <label for="toggleGpp">Show GPP</label>
-    
-    <input type="checkbox" id="togglePop">
-    <label for="togglePop">Show Population</label>
-    
-    <input type="checkbox" id="togglePrecip">
-    <label for="togglePrecip">Show Precipitation</label>
-    
-    <input type="checkbox" id="toggleLandCover">
-    <label for="toggleLandCover">Show Land Cover</label>
+  
+  <!-- Top-right overlay with checkboxes for dummy data layers -->
+  <div class="top-overlay">
+    <h1>Data Layers</h1>
+    <div class="toggle-group">
+      <label><input type="checkbox" id="toggleGpp"> Show GPP</label>
+      <label><input type="checkbox" id="togglePop"> Show Population</label>
+      <label><input type="checkbox" id="togglePrecip"> Show Precipitation</label>
+      <label><input type="checkbox" id="toggleLandCover"> Show Land Cover</label>
+    </div>
   </div>
   
-  <!-- Bottom-center slider panel -->
-  <div id="yearSliderPanel">
-    <label for="yearSlider">Select Year: <span id="yearLabel"></span></label>
-    <input type="range" id="yearSlider" min="2000" max="2020" step="1" value="2010">
-    <p class="info">Please click on a country to view detailed changes.</p>
+  <!-- Bottom-center overlay: OV Dashboard with year slider -->
+  <div class="bottom-overlay">
+    <h1>OV Dashboard</h1>
+    <label for="yearSlider">Select Year: <span id="yearLabel">2010</span></label>
+    <input type="range" id="yearSlider" min="2000" max="2020" step="1" value="2010" list="yearTicks">
+    <datalist id="yearTicks">
+      <option value="2000" label="2000"></option>
+      <option value="2002"></option>
+      <option value="2004"></option>
+      <option value="2006"></option>
+      <option value="2008"></option>
+      <option value="2010" label="2010"></option>
+      <option value="2012"></option>
+      <option value="2014"></option>
+      <option value="2016"></option>
+      <option value="2018"></option>
+      <option value="2020" label="2020"></option>
+    </datalist>
+    <p>Please click on a country to view detailed changes.</p>
   </div>
   
-  <!-- Leaflet and Earth Engine scripts -->
   <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
-  <script src="https://www.gstatic.com/earthengine/ee_api_js.js"></script>
-  
   <script>
-    // Global variables for Earth Engine layers
-    var gppLayer, popLayer, precipLayer, landCoverLayer;
-    // Current year selected from the slider
-    var currentYear = document.getElementById('yearSlider').value;
-    
     // Create the map centered on the Sahel region.
     var map = L.map('map').setView([15, 10], 6);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(map);
     
-    // Earth Engine initialization (ensure proper authentication)
-    ee.initialize(null, null, function() {
-      console.log("Earth Engine Initialized");
-      // Optionally, update layers if toggles are already checked.
-      updateAllActiveLayers();
-    }, function(error) {
-      console.error("EE Initialization error: " + error);
+    // Update the year label when the slider is used.
+    var yearSlider = document.getElementById('yearSlider');
+    var yearLabel = document.getElementById('yearLabel');
+    yearSlider.addEventListener('input', function() {
+      yearLabel.innerText = this.value;
     });
     
-    // Functions to update each layer for a given year:
-    
-    function updateGppLayer(year) {
-      var start = year + '-01-01', end = year + '-12-31';
-      var gppCollection = ee.ImageCollection("MODIS/006/MOD17A2H")
-                          .filterDate(start, end);
-      var gppImage = gppCollection.mean();
-      var gppVis = {min: 0, max: 500, palette: ['white', 'orange', 'green']};
-      gppImage.getMap(gppVis, function(mapInfo) {
-        if (gppLayer) { map.removeLayer(gppLayer); }
-        gppLayer = L.tileLayer(mapInfo.urlFormat, {attribution: 'GPP via EE'});
-        gppLayer.addTo(map);
-      });
-    }
-    
-    function updatePopulationLayer(year) {
-      var popCollection = ee.ImageCollection("CIESIN/GPWv411/GPW_Population_Density")
-                          .filter(ee.Filter.calendarRange(Number(year), Number(year), 'year'));
-      var popImage = popCollection.first();
-      var popVis = {min: 0, max: 1000, palette: ['blue', 'red']};
-      popImage.getMap(popVis, function(mapInfo) {
-        if (popLayer) { map.removeLayer(popLayer); }
-        popLayer = L.tileLayer(mapInfo.urlFormat, {attribution: 'Population via EE'});
-        popLayer.addTo(map);
-      });
-    }
-    
-    function updatePrecipLayer(year) {
-      var start = year + '-01-01', end = year + '-12-31';
-      var precipCollection = ee.ImageCollection("UCSB-CHG/CHIRPS/PENTAD")
-                             .filterDate(start, end);
-      var precipImage = precipCollection.mean();
-      var precipVis = {min: 0, max: 300, palette: ['white', 'blue']};
-      precipImage.getMap(precipVis, function(mapInfo) {
-        if (precipLayer) { map.removeLayer(precipLayer); }
-        precipLayer = L.tileLayer(mapInfo.urlFormat, {attribution: 'Precipitation via EE'});
-        precipLayer.addTo(map);
-      });
-    }
-    
-    function updateLandCoverLayer(year) {
-      var start = year + '-01-01', end = year + '-12-31';
-      var landCoverCollection = ee.ImageCollection("MODIS/006/MCD12Q1")
-                                .filterDate(start, end);
-      var landCoverImage = landCoverCollection.first();
-      var landCoverVis = {min: 1, max: 17, palette: ['black','green','brown','yellow','blue']};
-      landCoverImage.getMap(landCoverVis, function(mapInfo) {
-        if (landCoverLayer) { map.removeLayer(landCoverLayer); }
-        landCoverLayer = L.tileLayer(mapInfo.urlFormat, {attribution: 'Land Cover via EE'});
-        landCoverLayer.addTo(map);
-      });
-    }
-    
-    // Update all layers that are active based on the toggles.
-    function updateAllActiveLayers() {
-      if (document.getElementById('toggleGpp').checked) {
-        updateGppLayer(currentYear);
-      } else if (gppLayer) {
-        map.removeLayer(gppLayer); gppLayer = null;
-      }
-      if (document.getElementById('togglePop').checked) {
-        updatePopulationLayer(currentYear);
-      } else if (popLayer) {
-        map.removeLayer(popLayer); popLayer = null;
-      }
-      if (document.getElementById('togglePrecip').checked) {
-        updatePrecipLayer(currentYear);
-      } else if (precipLayer) {
-        map.removeLayer(precipLayer); precipLayer = null;
-      }
-      if (document.getElementById('toggleLandCover').checked) {
-        updateLandCoverLayer(currentYear);
-      } else if (landCoverLayer) {
-        map.removeLayer(landCoverLayer); landCoverLayer = null;
-      }
-    }
-    
-    // Event listeners for toggle checkboxes:
-    document.getElementById('toggleGpp').addEventListener('change', function() {
-      updateAllActiveLayers();
-    });
-    document.getElementById('togglePop').addEventListener('change', function() {
-      updateAllActiveLayers();
-    });
-    document.getElementById('togglePrecip').addEventListener('change', function() {
-      updateAllActiveLayers();
-    });
-    document.getElementById('toggleLandCover').addEventListener('change', function() {
-      updateAllActiveLayers();
-    });
-    
-    // Event listener for the year slider.
-    document.getElementById('yearSlider').addEventListener('input', function() {
-      currentYear = this.value;
-      document.getElementById('yearLabel').innerText = currentYear;
-      updateAllActiveLayers();
-    });
-    // Initialize year label.
-    document.getElementById('yearLabel').innerText = currentYear;
-    
-    // --- Sahel Countries Boundaries and Clickability ---
-    var sahelCountries = [
+    // Array of countries with their respective GeoJSON file names.
+    var countries = [
       { name: "Burkina Faso", file: "burkinafaso.json" },
       { name: "Chad", file: "chad.json" },
       { name: "Mauritania", file: "mauritania.json" },
@@ -227,10 +147,12 @@
       { name: "Mali", file: "mali.json" }
     ];
     
-    sahelCountries.forEach(function(country) {
+    // For each country, load the GeoJSON, add tooltips and interactivity.
+    countries.forEach(function(country) {
       fetch("/static/geojson/" + country.file)
         .then(function(response) { return response.json(); })
         .then(function(geojsonData) {
+          // Create a GeoJSON layer and bind a tooltip for each feature.
           var geojsonLayer = L.geoJSON(geojsonData, {
             style: function(feature) {
               return {
@@ -241,40 +163,52 @@
               };
             },
             onEachFeature: function(feature, layer) {
-              // Bind tooltip with country name.
-              layer.bindTooltip("<div style='text-align:center;'><strong style='font-size:1.2em;'>" 
-                                + country.name + "</strong></div>", {sticky: true});
+              // Bind tooltip with the country name.
+              layer.bindTooltip("<div style='text-align:center;'><strong style='font-size:1.2em;'>" + country.name + "</strong></div>", {sticky: true});
             }
           });
-          // Group features of a country for unified hover/click behavior.
+          
+          // Group all features of a country so they behave as one.
           var group = L.featureGroup(geojsonLayer.getLayers());
           
+          // Attach event handlers to all layers in the group.
           group.eachLayer(function(layer) {
             layer.on('mouseover', function(e) {
+              // When hovering over any feature, highlight the entire group.
               group.eachLayer(function(l) {
-                l.setStyle({ fillColor: "grey", fillOpacity: 0.5 });
+                l.setStyle({
+                  fillColor: "grey",
+                  fillOpacity: 0.5
+                });
               });
               e.target.openTooltip();
             });
             layer.on('mouseout', function(e) {
+              // On mouse out, revert style for all features in the group.
               group.eachLayer(function(l) {
-                l.setStyle({ fillColor: "transparent", fillOpacity: 0 });
+                l.setStyle({
+                  fillColor: "transparent",
+                  fillOpacity: 0,
+                  color: "black",
+                  weight: 2
+                });
               });
               e.target.closeTooltip();
             });
           });
           
-          // Clicking on any part of the country redirects to a detailed dashboard.
+          // Attach a click event for redirection.
           group.on('click', function(e) {
             var targetUrl = '/dashboard/' + country.name.toLowerCase().replace(/\s+/g, '');
             console.log("Redirecting to:", targetUrl);
             window.location.href = targetUrl;
           });
           
+          // Add the group to the map.
           group.addTo(map);
         })
         .catch(function(error) {
-          console.error("Error loading geojson for " + country.name + ": " + error);
+          console.error("Error loading GeoJSON for " + country.name + ": " + error);
         });
     });
   </script>

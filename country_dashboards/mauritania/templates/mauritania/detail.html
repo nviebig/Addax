@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Mauritania Dashboard Debug</title>
+  <title>Mauritania Dashboard</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
-    integrity="sha256-sA+e2Zj8P+0n6tY6F7iYd3eR6ZonbV1z5xT9gT9gC+o=" crossorigin=""/>
+        integrity="sha256-sA+e2Zj8P+0n6tY6F7iYd3eR6ZonbV1z5xT9gT9gC+o=" crossorigin=""/>
+  <!-- Plotly JS -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <style>
     body {
       margin: 0;
@@ -14,6 +16,7 @@
       font-family: 'Segoe UI', sans-serif;
       background-color: #f8f8f8;
     }
+    /* Header at the top */
     .header {
       position: relative;
       background-color: #3498db;
@@ -32,48 +35,178 @@
       color: #fff;
       cursor: pointer;
     }
+    /* Main container splits into two columns: map on the left, charts on the right */
     .container {
-      height: calc(100vh - 60px); /* Subtract header height */
       display: flex;
+      height: calc(100vh - 60px); /* Adjust based on header height */
+    }
+    /* Left column: Leaflet map */
+    .map-column {
+      flex: 1;
+      border-right: 1px solid #ccc;
+      position: relative;
     }
     #map {
       width: 100%;
       height: 100%;
-      background-color: #d3d3d3; /* Debugging background to verify container */
+    }
+    /* Right column: multiple charts stacked vertically */
+    .charts-column {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    /* Each chart gets half of the right column */
+    .chart {
+      flex: 1;
+      border-bottom: 1px solid #ccc;
+      overflow: auto; /* If chart is large, allow scroll */
+    }
+    .chart:last-child {
+      border-bottom: none;
+    }
+    /* Control panel at the top of the map (optional) */
+    .map-controls {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 1000;
+      background: rgba(255,255,255,0.9);
+      padding: 8px;
+      border-radius: 4px;
+    }
+    .map-controls select,
+    .map-controls button {
+      margin: 5px 0;
     }
   </style>
 </head>
 <body>
   <div class="header">
     <button class="back-button" onclick="window.location.href='/dashboard'">Back to Main Dashboard</button>
-    <h1>Mauritania Dashboard Debug</h1>
+    <h1>Mauritania Dashboard</h1>
   </div>
   <div class="container">
-    <div id="map"></div>
+    <!-- Left Column: Map -->
+    <div class="map-column">
+      <div id="map"></div>
+      <!-- Optional: Controls for selecting years, variables, etc. -->
+      <div class="map-controls" id="mapControls">
+        <h4>Land Cover Change</h4>
+        <label for="year1">Year 1:</label>
+        <select id="year1">
+          {% for y in range(2010, 2021) %}
+            <option value="{{ y }}">{{ y }}</option>
+          {% endfor %}
+        </select>
+        <br>
+        <label for="year2">Year 2:</label>
+        <select id="year2">
+          {% for y in range(2010, 2021) %}
+            <option value="{{ y }}">{{ y }}</option>
+          {% endfor %}
+        </select>
+        <br>
+        <button onclick="updateMap()">Compare</button>
+      </div>
+    </div>
+    <!-- Right Column: Charts -->
+    <div class="charts-column">
+      <div id="chart1" class="chart"></div>
+      <div id="chart2" class="chart"></div>
+    </div>
   </div>
+
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
-    integrity="sha256-Dv5M3shPjC8gKPNKChwuaKq/jHhaE0tQ/Pr+3QJZCqM=" crossorigin=""></script>
+          integrity="sha256-Dv5M3shPjC8gKPNKChwuaKq/jHhaE0tQ/Pr+3QJZCqM="
+          crossorigin=""></script>
+  <!-- Plotly already loaded from CDN above -->
+
   <script>
-    console.log("Minimal Mauritania map script loaded");
-    // Initialize the map centered on Mauritania.
+    console.log("Mauritania Dashboard script loaded.");
+
+    // 1. Initialize the Leaflet map
     var map = L.map('map').setView([20, -10], 6);
-    console.log("Map initialized");
-    // Add the OpenStreetMap base layer.
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(map);
-    console.log("OSM base layer added");
-    
-    // Add the MODIS Land Cover layer from Google Earth Engine
-    var modisMapId = 'YOUR_MODIS_MAP_ID'; // Replace with your MODIS map id from Google Earth Engine
-    var modisToken = 'YOUR_MODIS_TOKEN'; // Replace with your access token
 
-    L.tileLayer('https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/maps/' + modisMapId + '/tiles/{z}/{x}/{y}?token=' + modisToken, {
-      attribution: 'Google Earth Engine MODIS Land Cover',
-      maxZoom: 18,
-      opacity: 0.7
-    }).addTo(map);
+    // 2. Load municipalities GeoJSON (replace 'mauritania.json' with your file)
+    fetch("/static/geojson/mauritania.json")
+      .then(response => response.json())
+      .then(data => {
+        L.geoJSON(data, {
+          style: {
+            color: "#FF5733",
+            weight: 2,
+            fillOpacity: 0.1
+          },
+          onEachFeature: function(feature, layer) {
+            // Show municipality name on hover (assuming feature.properties.name)
+            if (feature.properties && feature.properties.name) {
+              layer.bindTooltip(feature.properties.name, {sticky: true});
+            }
+            // If you want click events, attach them here
+            layer.on('click', function() {
+              console.log("Clicked municipality:", feature.properties.name);
+              // Possibly load a chart or data specific to that municipality
+            });
+          }
+        }).addTo(map);
+        console.log("Municipalities loaded.");
+      })
+      .catch(err => console.error("Error loading Mauritania municipalities:", err));
+
+    // 3. Add a placeholder GEE layer for land cover (replace with your actual GEE tile logic)
+    // For now, we'll just store it in a variable so we can remove/add it
+    var landCoverLayer = null;
+    function updateMap() {
+      var y1 = document.getElementById('year1').value;
+      var y2 = document.getElementById('year2').value;
+      console.log("Comparing land cover between", y1, "and", y2);
+
+      // If there's an existing land cover layer, remove it
+      if (landCoverLayer) {
+        map.removeLayer(landCoverLayer);
+      }
+
+      // Placeholder tile URL from Stamen for demonstration
+      // In your real implementation, you'd call a Flask endpoint that returns a GEE tile URL
+      var tileUrl = 'https://stamen-tiles.a.ssl.fastly.net/toner/{z}/{x}/{y}.png';
+      landCoverLayer = L.tileLayer(tileUrl, { attribution: 'Stamen Toner' });
+      landCoverLayer.addTo(map);
+      console.log("Updated land cover layer for", y1, "->", y2);
+    }
+
+    // 4. Create placeholder charts with Plotly
+    // Chart 1: Example precipitation trends
+    var tracePrecip = {
+      x: [2010, 2011, 2012, 2013, 2014, 2015],
+      y: [200, 210, 180, 220, 190, 230],
+      type: 'scatter',
+      name: 'Precipitation'
+    };
+    var layoutPrecip = {
+      title: 'Precipitation Over Time (mm)',
+      margin: { t: 40 }
+    };
+    Plotly.newPlot('chart1', [tracePrecip], layoutPrecip);
+
+    // Chart 2: Example GPP or population distribution
+    var traceGPP = {
+      labels: ['Desert', 'Savanna', 'Forest', 'Urban'],
+      values: [40, 30, 20, 10],
+      type: 'pie',
+      name: 'Land Cover'
+    };
+    var layoutGPP = {
+      title: 'Land Cover Distribution',
+      margin: { t: 40 }
+    };
+    Plotly.newPlot('chart2', [traceGPP], layoutGPP);
+
+    console.log("Charts rendered.");
   </script>
 </body>
 </html>

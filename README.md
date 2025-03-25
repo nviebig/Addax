@@ -149,6 +149,26 @@ To add a new country dashboard:
 
 The Sahel-wide comparison page is accessible via the "Sahel Wide Analysis" button on the dashboard. This page is defined in `templates/sahel_comparison.html` and provides a comparison of key indicators across all Sahel countries. It includes a "Back to Dashboard" button to allow users to navigate back to the main dashboard.
 
+## Further Steps
+
+1. **Enhanced Google Earth Engine Integration:**  
+   Integrate more detailed Earth Engine-supported datasets and analyses to provide in-depth information on various factors leading to land degradation. This could include access to time-series data, advanced geospatial analytics, and visualizations that allow users to track changes over time.
+
+2. **Dual-Mode Dashboard Interface:**  
+   Implement toggles on each dashboard to switch between two modes:  
+   - **Scientists' View:** Displays comprehensive data, detailed analyses, and full conclusions to support in-depth research and peer review.  
+   - **Policy Makers' View:** Provides a summarized, high-level presentation with key messages and actionable insights.  
+   This approach ensures that both technical users and decision-makers receive information in a format best suited to their needs.
+
+3. **Multilingual Support:**  
+   Expand language support by adding more language options. This would allow the application to be accessible to a broader audience in the Sahel region and beyond, fostering greater collaboration and understanding across different linguistic groups.
+
+4. **Enhanced User Interaction and Customization:**  
+   Further improve user engagement by incorporating interactive features such as real-time data updates, advanced filtering options, and customizable visualization settings. This could include features like:
+   - Custom dashboards where users can select and arrange the metrics they are most interested in.
+   - Export options for charts and maps.
+   - Automated alerts and notifications for significant changes in key indicators.
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

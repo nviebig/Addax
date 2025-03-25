@@ -35,6 +35,56 @@
       color: #fff;
       cursor: pointer;
     }
+    /* Toggle container in header */
+    .toggle-container {
+      position: absolute;
+      top: 10px;
+      left: 20%;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.2em;
+    }
+    /* Triple-sized Toggle switch styles */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 150px;
+      height: 72px;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 72px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 54px;
+      width: 54px;
+      left: 9px;
+      bottom: 9px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: #2980b9;
+    }
+    input:checked + .slider:before {
+      transform: translateX(78px);
+    }
     /* Main container splits into two columns: map on the left, charts on the right */
     .container {
       display: flex;
@@ -83,6 +133,14 @@
 </head>
 <body>
   <div class="header">
+    <!-- Toggle switch for Scientists / Policy Makers -->
+    <div class="toggle-container">
+      <label class="switch">
+        <input type="checkbox" id="modeToggle" onchange="toggleMode()">
+        <span class="slider"></span>
+      </label>
+      <span id="toggleLabel">For Scientists and Environmental Policy Makers</span>
+    </div>
     <button class="back-button" onclick="window.location.href='/dashboard'">Back to Main Dashboard</button>
     <h1>Mauritania Dashboard</h1>
   </div>
@@ -125,6 +183,18 @@
 
   <script>
     console.log("Mauritania Dashboard script loaded.");
+
+    // Toggle mode function
+    function toggleMode() {
+      var toggle = document.getElementById('modeToggle');
+      var label = document.getElementById('toggleLabel');
+      if (toggle.checked) {
+        label.innerText = 'For Policy Makers';
+      } else {
+        label.innerText = 'For Scientists and Environmental Policy Makers';
+      }
+      console.log("Toggle mode changed to:", label.innerText);
+    }
 
     // 1. Initialize the Leaflet map
     var map = L.map('map').setView([20, -10], 6);
